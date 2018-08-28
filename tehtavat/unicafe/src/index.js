@@ -37,11 +37,18 @@ const FeedbackDiv = ({ title, lisaaHyva, lisaaNeutraali, lisaaHuono }) => {
 }
 
 const Stats = ({ hyvia, neutraaleja, huonoja }) => {
+    const summa = hyvia - huonoja
+    const arvosteluja = hyvia + neutraaleja + huonoja
+    const keskiarvo = (summa / arvosteluja).toFixed(2)
+    const positProsent = (hyvia / arvosteluja * 100).toFixed(1)
+    
     return (
         <div>
-            <p>hyvä {hyvia}<br />
-            neutraali {neutraaleja}<br />
-            huono {huonoja}</p>
+            <p>hyvä {hyvia}</p>
+            <p>neutraali {neutraaleja}</p>
+            <p>huono {huonoja}</p>
+            <p>keskiarvo {isFinite(keskiarvo) ? keskiarvo : (0).toFixed(2)}</p>
+            <p>positiivisia {isFinite(positProsent) ? positProsent : (0).toFixed(1)}%</p>
         </div>
     )
 }
