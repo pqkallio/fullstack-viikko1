@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+const prosentteina = (arvo) => (arvo * 100).toFixed(1).toString() + '%'
+
 const Button = ({ title, handleClick }) => {
     return (
         <button onClick={handleClick}>{title}</button>
@@ -36,28 +38,35 @@ const FeedbackDiv = ({ title, lisaaHyva, lisaaNeutraali, lisaaHuono }) => {
     )
 }
 
-const Stats = ({ hyvia, neutraaleja, huonoja }) => {
-    const summa = hyvia - huonoja
-    const arvosteluja = hyvia + neutraaleja + huonoja
-    const keskiarvo = (summa / arvosteluja).toFixed(2)
-    const positProsent = (hyvia / arvosteluja * 100).toFixed(1)
-    
+const Statistic = ({ title, value }) => {
+    return (
+        <tr>
+            <td>{title}</td>
+            <td>{value}</td>
+        </tr>
+    )
+}
+
+const Statistics = ({ hyvia, neutraaleja, huonoja, keskiarvo, positiivisia }) => {
     return (
         <div>
-            <p>hyvä {hyvia}</p>
-            <p>neutraali {neutraaleja}</p>
-            <p>huono {huonoja}</p>
-            <p>keskiarvo {isFinite(keskiarvo) ? keskiarvo : (0).toFixed(2)}</p>
-            <p>positiivisia {isFinite(positProsent) ? positProsent : (0).toFixed(1)}%</p>
+            <table>
+                <Statistic title='hyvä' value={hyvia} />
+                <Statistic title='neutraali' value={neutraaleja} />
+                <Statistic title='huono' value={huonoja} />
+                <Statistic title='keskiarvo' value={keskiarvo().toFixed(2)} />
+                <Statistic title='positiivisia' value={prosentteina(positiivisia())} />
+            </table>
         </div>
     )
 }
 
-const StatsDiv = ({ title, hyvia, neutraaleja, huonoja }) => {
+const StatsDiv = ({ title, hyvia, neutraaleja, huonoja, keskiarvo, positiivisia }) => {
     return (
         <div>
             <Header title={title} />
-            <Stats hyvia={hyvia} neutraaleja={neutraaleja} huonoja={huonoja} />
+            <Statistics hyvia={hyvia} neutraaleja={neutraaleja} huonoja={huonoja}
+                        keskiarvo={keskiarvo} positiivisia={positiivisia} />
         </div>
     )
 }
@@ -81,17 +90,32 @@ class App extends React.Component {
     
     lisaaHuono = () => this.setState({ huonoja: this.state.huonoja + 1 })
 
+    arvosteluja = () => this.state.hyvia + this.state.neutraaleja + this.state.huonoja
+
+    keskiarvo = () => {
+        const summa = this.state.hyvia - this.state.huonoja
+        const keskiarvo = (summa / this.arvosteluja())
+
+        return isFinite(keskiarvo) ? keskiarvo : 0
+    }
+
+    positiivisia = () => {
+        const positiivistenOsuus = this.state.hyvia / this.arvosteluja()
+
+        return isFinite(positiivistenOsuus) ? positiivistenOsuus : 0
+    }
+
     render() {
         return (
             <div>
                 <FeedbackDiv title={this.feedback_title} lisaaHyva={this.lisaaHyva} 
                              lisaaNeutraali={this.lisaaNeutraali} lisaaHuono={this.lisaaHuono} />
                 <StatsDiv title={this.stats_title} hyvia={this.state.hyvia}
-                          neutraaleja={this.state.neutraaleja} huonoja={this.state.huonoja} />
+                          neutraaleja={this.state.neutraaleja} huonoja={this.state.huonoja}
+                          keskiarvo={this.keskiarvo} positiivisia={this.positiivisia} />
             </div>
         )
     }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
-
