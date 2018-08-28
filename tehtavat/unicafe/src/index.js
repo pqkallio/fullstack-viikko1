@@ -48,6 +48,16 @@ const Statistic = ({ title, value }) => {
 }
 
 const Statistics = ({ hyvia, neutraaleja, huonoja, keskiarvo, positiivisia }) => {
+    const yhteensa = hyvia + neutraaleja + huonoja
+
+    if (yhteensa === 0) {
+        return (
+            <div>
+                <p>ei yhtään palautetta annettu</p>
+            </div>
+        )
+    }
+
     return (
         <div>
             <table>
