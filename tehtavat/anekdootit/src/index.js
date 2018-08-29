@@ -10,6 +10,24 @@ const anecdotes = [
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
   ]
 
+const MostVotedDiv = ({ mostVotedIndex, nVotes }) => {
+    return (
+        <div>
+            <h2>anecdote with most votes:</h2>
+            <AnecdoteDiv anecdoteIndex={mostVotedIndex} nVotes={nVotes} />
+        </div>
+    )
+}
+
+const AnecdoteDiv = ({ anecdoteIndex, nVotes }) => {
+    return (
+        <div>
+            <p>{anecdotes[anecdoteIndex]}</p>
+            <p>has {nVotes} votes</p>
+        </div>
+    )
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -19,7 +37,8 @@ class App extends React.Component {
 
     this.state = {
       anecdote: 0,
-      votes: votesArray
+      votes: votesArray,
+      mostVoted: 0
     }
   }
 
@@ -33,18 +52,24 @@ class App extends React.Component {
       const copyOfVotes = [...this.state.votes]
       const anecdote = this.state.anecdote
 
-      copyOfVotes[anecdote] += 1
-
+      copyOfVotes[anecdote] += 1      
       this.setState({ votes: copyOfVotes })
+
+      const mostVoted = copyOfVotes.indexOf(Math.max(...copyOfVotes))
+      if (this.state.mostVoted !== mostVoted) {
+          this.setState({ mostVoted: mostVoted })
+      }
   }
 
   render() {
     return (
       <div>
-        <p>{anecdotes[this.state.anecdote]}</p>
-        <p>has {this.state.votes[this.state.anecdote]} votes</p>
+        <AnecdoteDiv anecdoteIndex={this.state.anecdote}
+                     nVotes={this.state.votes[this.state.anecdote]} />
         <button onClick={this.voteCurrentAnecdote()}>vote</button>
         <button onClick={this.getRandomAnecdote()}>next anecdote</button>
+        <MostVotedDiv mostVotedIndex={this.state.mostVoted}
+                      nVotes={this.state.votes[this.state.mostVoted]} />
       </div>
     )
   }
